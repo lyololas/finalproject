@@ -251,7 +251,7 @@ def menu():
     while True:
         
         screen.fill(WHITE)
-
+    
         font = pygame.font.Font(None, 74)
         title_text = font.render("omegaylitka", True, BLACK)
         start_text = font.render("Начать", True, BLACK)
@@ -398,7 +398,7 @@ start_time = pygame.time.get_ticks()
 level_transition = False
 transition_start_time = 0
 
-while True:
+while True: 
     current_time = pygame.time.get_ticks()
     elapsed_time = (current_time - start_time) // 1000  # Время в секундах
 
