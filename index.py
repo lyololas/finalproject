@@ -249,6 +249,7 @@ class Plank:
 
 def menu():
     while True:
+        
         screen.fill(WHITE)
 
         font = pygame.font.Font(None, 74)
@@ -332,7 +333,38 @@ def game_over_screen(score):
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+def you_won_screen(score):
+    save_score(score)
+    while True:
+        screen.fill(WHITE)
 
+        font = pygame.font.Font(None, 74)
+        you_won_text = font.render("You Won!", True, BLACK)
+        score_text = font.render(f"Final Score: {score}", True, BLACK)
+        exit_text = font.render("Exit", True, BLACK)
+
+        you_won_rect = you_won_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 4))
+        score_rect = score_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+        exit_rect = exit_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 100))
+
+        screen.blit(you_won_text, you_won_rect)
+        screen.blit(score_text, score_rect)
+        screen.blit(exit_text, exit_rect)
+
+        mouse_pos = pygame.mouse.get_pos()
+        if exit_rect.collidepoint(mouse_pos):
+            exit_text = font.render("Exit", True, BLACK)
+            if pygame.mouse.get_pressed()[0]:
+                return False
+        else:
+            exit_text = font.render("Exit", True, BLACK)
+
+        pygame.display.flip()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
 
 
 
@@ -401,8 +433,8 @@ while True:
 
     player.update()
 
-    # Логика перехода на второй уровень ЗДЕСЬ ВРЕМЯ МЕНЯТЬ
-    if level == 1 and elapsed_time >= 60 and not level_transition:
+    # Логика перехода на следующий уровень
+    if level < 4 and elapsed_time >= 5 and not level_transition:
         level_transition = True
         transition_start_time = current_time
 
@@ -410,17 +442,31 @@ while True:
         if current_time - transition_start_time < 3000:  # 3 секунды черного экрана
             screen.fill(BLACK)
             font = pygame.font.Font(None, 74)
-            level_text = font.render("Вы прошли первый уровень!", True, WHITE)
+            level_text = font.render(f"Вы прошли уровень {level}!", True, WHITE)
             level_rect = level_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
             screen.blit(level_text, level_rect)
             pygame.display.flip()
             continue
         else:
-            level = 2
+            level += 1
             level_transition = False
-            start_time = pygame.time.get_ticks()  # Сброс таймера для второго уровня
+            start_time = pygame.time.get_ticks()  # Сброс таймера для следующего уровня
             enemies = []  # Очищаем врагов для нового уровня
-            # Можно добавить новые враги или изменить их поведение
+
+    # Проверка на завершение игры (уровень 4)
+    if level == 4 and elapsed_time >= 60:
+        if you_won_screen(player.score):
+            # Если игрок хочет сыграть снова, сбросить игру
+            player = Player(new_map_size[0])
+            enemies = []
+            bullets = []
+            plank = Plank(300, SCREEN_HEIGHT - 100)
+            player.score = 0
+            level = 1  # Сброс уровня
+            start_time = pygame.time.get_ticks()  # Сброс таймера
+        else:
+            pygame.quit()
+            sys.exit()
 
     enemy_spawn_time += clock.get_time()
     if enemy_spawn_time >= 1000:
