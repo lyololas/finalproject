@@ -31,7 +31,6 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("help")
 
 
-# SQLite Database Setup
 def init_db():
     conn = sqlite3.connect('high_scores.db')
     c = conn.cursor()
@@ -80,7 +79,7 @@ class Camera:
 class Player:
     def __init__(self, map_width):
         self.rect = pygame.Rect(100, SCREEN_HEIGHT - PLAYER_HEIGHT - 50, PLAYER_WIDTH, PLAYER_HEIGHT)
-        self.hitbox = pygame.Rect(PLAYER_WIDTH // 2, PLAYER_HEIGHT // 2, -1, -1)  # Хитбокс 10x10 пикселей
+        self.hitbox = pygame.Rect(PLAYER_WIDTH // 2, PLAYER_HEIGHT // 2, -1, -1)  # хитбокс 10x10 пикселей
         self.velocity_y = 0
         self.on_ground = False
         self.direction = 1
@@ -88,8 +87,7 @@ class Player:
         self.map_width = map_width
         self.score = 0
 
-        # Масштабирование спрайта
-        self.sprite_scale = 2  # Увеличиваем спрайт в 2 раза
+        self.sprite_scale = 2
         self.sprite_width = PLAYER_WIDTH * self.sprite_scale
         self.sprite_height = PLAYER_HEIGHT * self.sprite_scale
 
@@ -103,7 +101,6 @@ class Player:
             for col in range(3):
                 frame = self.sprite_sheet.subsurface(pygame.Rect(col * self.frame_width, row * self.frame_height,
                                                              self.frame_width, self.frame_height))
-                # Масштабируем каждый кадр спрайта
                 frame = pygame.transform.scale(frame, (self.sprite_width, self.sprite_height))
                 frames_row.append(frame)
             self.frames.append(frames_row)
@@ -113,9 +110,9 @@ class Player:
         self.animation_time = 0
         self.current_direction = 0
 
-        # Переменная для ограничения частоты выстрелов
+        # переменная для ограничения частоты выстрелов
         self.last_shot_time = 0
-        self.shoot_cooldown = 200  # Задержка между выстрелами в миллисекундах
+        self.shoot_cooldown = 200  # задержка в развитии
 
     def move(self, dx, dy):
         self.rect.x += dx
@@ -177,7 +174,7 @@ class Enemy:
         self.sprite_height = ENEMY_HEIGHT * self.sprite_scale
 
         self.rect = pygame.Rect(x, y, self.sprite_width, self.sprite_height)
-        self.hitbox = pygame.Rect(x, y, self.sprite_width, self.sprite_height)  # Хитбокс по размеру врага
+        self.hitbox = pygame.Rect(x, y, self.sprite_width, self.sprite_height)  # хитбокс по размеру врага
         self.player = player
 
         self.sprite_sheet = pygame.image.load("Frog.png").convert_alpha()
@@ -206,7 +203,7 @@ class Enemy:
         self.rect.x += dx * ENEMY_SPEED
         self.rect.y += dy * ENEMY_SPEED
 
-        # Обновление позиции хитбокса
+        # обновление позиции хитбокса
         self.hitbox.x = self.rect.x
         self.hitbox.y = self.rect.y
 
@@ -221,7 +218,7 @@ class Enemy:
 
 class Bullet:
     def __init__(self, x, y, angle):
-        # Начальные координаты пули — центр спрайта игрока
+        # начальные координаты пули — центр спрайта бебрагрка
         self.rect = pygame.Rect(x - BULLET_WIDTH // 2, y - BULLET_HEIGHT // 2, BULLET_WIDTH, BULLET_HEIGHT)
         self.direction_x = math.cos(angle)
         self.direction_y = math.sin(angle)
@@ -233,7 +230,7 @@ class Bullet:
         self.rect.x += BULLET_SPEED * self.direction_x
         self.rect.y += BULLET_SPEED * self.direction_y
 
-        # Удаляем пулю, если она пролетела максимальное расстояние
+        # удаляем пулю, если она пролетела максимальное расстояние
         if abs(self.rect.x - self.start_x) > self.max_distance or abs(self.rect.y - self.start_y) > self.max_distance:
             return True
         return False
@@ -434,7 +431,7 @@ while True:
     player.update()
 
     # Логика перехода на следующий уровень
-    if level < 4 and elapsed_time >= 5 and not level_transition:
+    if level <= 4 and elapsed_time >= 5 and not level_transition:
         level_transition = True
         transition_start_time = current_time
 
@@ -454,7 +451,7 @@ while True:
             enemies = []  # Очищаем врагов для нового уровня
 
     # Проверка на завершение игры (уровень 4)
-    if level == 4 and elapsed_time >= 60:
+    if level == 4:
         if you_won_screen(player.score):
             # Если игрок хочет сыграть снова, сбросить игру
             player = Player(new_map_size[0])
