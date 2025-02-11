@@ -253,7 +253,7 @@ def menu():
         screen.fill(WHITE)
 
         font = pygame.font.Font(None, 74)
-        title_text = font.render("omegalol", True, BLACK)
+        title_text = font.render("omegaylitka", True, BLACK)
         start_text = font.render("Начать", True, BLACK)
         exit_text = font.render("Выход", True, BLACK)
         high_score_text = font.render(f"High Score: {get_high_score()}", True, BLACK)
